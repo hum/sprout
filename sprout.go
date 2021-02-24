@@ -36,7 +36,7 @@ func (s *Sprout) Reddit() *Reddit {
 	return s.reddit
 }
 
-func (r *Reddit) Get(subreddits ...string) (result []Post, err error) {
+func (r *Reddit) Get(subreddits []string) (result []Post, err error) {
 	if r.UseAPI {
 		result, err = r.get(subreddits)
 		if err != nil {
