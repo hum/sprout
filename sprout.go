@@ -1,6 +1,9 @@
 package sprout
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/turnage/graw/reddit"
 )
 
@@ -9,7 +12,7 @@ type Sprout struct {
 }
 
 type Reddit struct {
-	bot      *reddit.Bot
+	bot      reddit.Bot
 	Conf     *Config
 	Username string
 	Password string
@@ -34,7 +37,7 @@ func (s *Sprout) Reddit() *Reddit {
 }
 
 func (r *Reddit) Get(subreddits ...string) (result []Post, err error) {
-	if UseAPI {
+	if r.UseAPI {
 		result, err = r.get(subreddits)
 		if err != nil {
 			return
@@ -45,7 +48,7 @@ func (r *Reddit) Get(subreddits ...string) (result []Post, err error) {
 	return
 }
 
-func createRedditBot(conf *Config) (*reddit.Bot, error) {
+func createRedditBot(conf *Config) (reddit.Bot, error) {
 	c, err := validateRedditConf(conf)
 	if err != nil {
 		return nil, err
@@ -59,7 +62,7 @@ func createRedditBot(conf *Config) (*reddit.Bot, error) {
 	return bot, nil
 }
 
-func (r *Reddit) get(subreddits ...string) (result []Post, err error) {
+func (r *Reddit) get(subreddits []string) (result []Post, err error) {
 	if r.bot == nil {
 		r.bot, err = createRedditBot(r.Conf)
 		if err != nil {
@@ -72,7 +75,7 @@ func (r *Reddit) get(subreddits ...string) (result []Post, err error) {
 
 		harvest, err := r.bot.Listing(fmt.Sprintf(format, subreddit), "")
 		if err != nil {
-			return
+			return result, err
 		}
 
 		for _, post := range harvest.Posts {
@@ -84,29 +87,30 @@ func (r *Reddit) get(subreddits ...string) (result []Post, err error) {
 			result = append(result, p)
 		}
 	}
+	return
 }
 
 func validateRedditConf(conf *Config) (reddit.BotConfig, error) {
 	confError := "No %s string specified in config."
 
 	if conf.UserAgent == "" {
-		return nil, fmt.Errorf(fmt.Sprintf(confError, "user-agent"))
+		return reddit.BotConfig{}, fmt.Errorf(fmt.Sprintf(confError, "user-agent"))
 	}
 
 	if conf.ClientID == "" {
-		return nil, fmt.Errorf(fmt.Sprintf(confError, "client ID"))
+		return reddit.BotConfig{}, fmt.Errorf(fmt.Sprintf(confError, "client ID"))
 	}
 
 	if conf.ClientSecret == "" {
-		return nil, fmt.Errorf(fmt.Sprintf(confError, "client secret"))
+		return reddit.BotConfig{}, fmt.Errorf(fmt.Sprintf(confError, "client secret"))
 	}
 
 	if conf.Username == "" {
-		return nil, fmt.Errorf(fmt.Sprintf(confError, "username"))
+		return reddit.BotConfig{}, fmt.Errorf(fmt.Sprintf(confError, "username"))
 	}
 
 	if conf.Password == "" {
-		return nil, fmt.Errorf(fmt.Sprintf(confError, "password"))
+		return reddit.BotConfig{}, fmt.Errorf(fmt.Sprintf(confError, "password"))
 	}
 
 	return reddit.BotConfig{
@@ -117,5 +121,5 @@ func validateRedditConf(conf *Config) (reddit.BotConfig, error) {
 			Username: conf.Username,
 			Password: conf.Password,
 		},
-	}
+	}, nil
 }
