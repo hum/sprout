@@ -92,7 +92,8 @@ func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subre
 
 		harvest, err := r.bot.ListingWithParams(fmt.Sprintf(format, subreddit), params)
 		if err != nil {
-			return result, err
+      fmt.Println("Error listing for ", subreddit)
+			continue
 		}
 
 		for _, post := range harvest.Posts {
