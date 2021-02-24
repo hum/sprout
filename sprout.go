@@ -47,7 +47,7 @@ func (r *Reddit) Get(subreddits []string, limit int) (result map[string]Subreddi
 		postLimit := strconv.Itoa(limit - 1) // for some reason Reddit returns limit+1 results
 		result, err = r.get(subreddits, postLimit)
 		if err != nil {
-			return
+			return result, fmt.Errorf("Could not execute get function: %v", err)
 		}
 		return
 	}
@@ -59,12 +59,12 @@ func (r *Reddit) Get(subreddits []string, limit int) (result map[string]Subreddi
 func createRedditBot(conf *Config) (reddit.Bot, error) {
 	c, err := validateRedditConf(conf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Could not validate Reddit Config: %v", err)
 	}
 
 	bot, err := reddit.NewBot(c)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Could not create new Reddit Bot instance: %v", err)
 	}
 
 	return bot, nil
@@ -74,7 +74,7 @@ func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subre
 	if r.bot == nil {
 		r.bot, err = createRedditBot(r.Conf)
 		if err != nil {
-			return
+			return result, fmt.Errorf("Could not create reddit bot: %v", err)
 		}
 	}
 
