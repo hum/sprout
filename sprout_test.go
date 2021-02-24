@@ -1,7 +1,6 @@
 package sprout_test
 
 import (
-	"fmt"
 	"github.com/hum/sprout"
 	"os"
 	"testing"
