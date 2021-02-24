@@ -2,6 +2,7 @@ package sprout
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/turnage/graw/reddit"
@@ -36,16 +37,17 @@ func (s *Sprout) Reddit() *Reddit {
 	return s.reddit
 }
 
-func (r *Reddit) Get(subreddits []string) (result []Post, err error) {
+func (r *Reddit) Get(subreddits []string, limit int) (result []Post, err error) {
 	if r.UseAPI {
-		result, err = r.get(subreddits)
+		postLimit := strconv.Itoa(limit)
+		result, err = r.get(subreddits, postLimit)
 		if err != nil {
 			return
 		}
 	}
 	// TODO:
 	// Let user use a webcrawler instead of only an API auth
-	return
+	return result, fmt.Errorf("Non-API post harvest for Reddit is not implemented yet. Use the API.")
 }
 
 func createRedditBot(conf *Config) (reddit.Bot, error) {
@@ -62,7 +64,7 @@ func createRedditBot(conf *Config) (reddit.Bot, error) {
 	return bot, nil
 }
 
-func (r *Reddit) get(subreddits []string) (result []Post, err error) {
+func (r *Reddit) get(subreddits []string, limit string) (result []Post, err error) {
 	if r.bot == nil {
 		r.bot, err = createRedditBot(r.Conf)
 		if err != nil {
@@ -70,10 +72,14 @@ func (r *Reddit) get(subreddits []string) (result []Post, err error) {
 		}
 	}
 
+	params := map[string]string{
+		"limit": limit,
+	}
+
 	for _, subreddit := range subreddits {
 		format := "/r/%s"
 
-		harvest, err := r.bot.Listing(fmt.Sprintf(format, subreddit), "")
+		harvest, err := r.bot.ListingWithParams(fmt.Sprintf(format, subreddit), params)
 		if err != nil {
 			return result, err
 		}
