@@ -26,6 +26,11 @@ type Post struct {
 	Link   string
 }
 
+type Subreddit struct {
+  Name string
+  Posts []Post
+}
+
 func New() *Sprout {
 	return &Sprout{}
 }
@@ -37,9 +42,9 @@ func (s *Sprout) Reddit() *Reddit {
 	return s.reddit
 }
 
-func (r *Reddit) Get(subreddits []string, limit int) (result []Post, err error) {
+func (r *Reddit) Get(subreddits []string, limit int) (result map[string]Subreddit, err error) {
 	if r.UseAPI {
-		postLimit := strconv.Itoa(limit)
+		postLimit := strconv.Itoa(limit-1) // for some reason Reddit returns limit+1 results
 		result, err = r.get(subreddits, postLimit)
 		if err != nil {
 			return
@@ -65,13 +70,15 @@ func createRedditBot(conf *Config) (reddit.Bot, error) {
 	return bot, nil
 }
 
-func (r *Reddit) get(subreddits []string, limit string) (result []Post, err error) {
+func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subreddit, err error) {
 	if r.bot == nil {
 		r.bot, err = createRedditBot(r.Conf)
 		if err != nil {
 			return
 		}
 	}
+
+  result = make(map[string]Subreddit, len(subreddits))
 
 	params := map[string]string{
 		"limit": limit,
@@ -80,19 +87,26 @@ func (r *Reddit) get(subreddits []string, limit string) (result []Post, err erro
 	for _, subreddit := range subreddits {
 		format := "/r/%s"
 
+    sub := Subreddit{}
+    sub.Name = subreddit
+
 		harvest, err := r.bot.ListingWithParams(fmt.Sprintf(format, subreddit), params)
 		if err != nil {
 			return result, err
 		}
 
 		for _, post := range harvest.Posts {
+      // TODO:
+      // Allow user to set params that filter out URLs
+      // This ignores all posts that don't have an image
 			if strings.Contains(post.URL, "/comments/") {
 				continue
 			}
 
 			p := Post{Name: post.Title, Author: post.Author, Link: post.URL}
-			result = append(result, p)
+			sub.Posts = append(sub.Posts, p)
 		}
+    result[subreddit] = sub
 	}
 	return
 }

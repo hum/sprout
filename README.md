@@ -27,13 +27,18 @@ subreddits := []string{
 	"aww",
 }
 
-posts, err := reddit.Get(subs)
+subreddits, err := reddit.Get(subs)
 if err != nil {
   panic(err)
 }
 
-for _, post := range posts {
-  fmt.Println(post.Link)
+for name, subreddit := range subreddits {
+  fmt.Println(name) # Subreddit's name
+
+  # iterate through all posts harvested from the subreddit
+  for _, post := range subreddit.Posts {
+    fmt.Println(post.Link)
+  }
 }
 ```
 
