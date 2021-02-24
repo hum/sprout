@@ -5,7 +5,7 @@ A library to collect posts/images from social media. A very early WIP.
 ```go
 import "github.com/hum/sprout"
 
-sprout := sprout.New(UseAPI: false)
+sprout := sprout.New()
 reddit := sprout.Reddit()
 
 # Create config
@@ -19,6 +19,7 @@ config := &sprout.Config{
 
 # Set config
 reddit.Conf = config
+reddit.UseAPI = true
 
 # Pick subreddits to get data from
 subreddits := []string{
