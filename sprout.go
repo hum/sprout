@@ -44,6 +44,7 @@ func (r *Reddit) Get(subreddits []string, limit int) (result []Post, err error) 
 		if err != nil {
 			return
 		}
+    return
 	}
 	// TODO:
 	// Let user use a webcrawler instead of only an API auth
