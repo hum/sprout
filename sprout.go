@@ -27,8 +27,8 @@ type Post struct {
 }
 
 type Subreddit struct {
-  Name string
-  Posts []Post
+	Name  string
+	Posts []Post
 }
 
 func New() *Sprout {
@@ -44,12 +44,12 @@ func (s *Sprout) Reddit() *Reddit {
 
 func (r *Reddit) Get(subreddits []string, limit int) (result map[string]Subreddit, err error) {
 	if r.UseAPI {
-		postLimit := strconv.Itoa(limit-1) // for some reason Reddit returns limit+1 results
+		postLimit := strconv.Itoa(limit - 1) // for some reason Reddit returns limit+1 results
 		result, err = r.get(subreddits, postLimit)
 		if err != nil {
 			return
 		}
-    return
+		return
 	}
 	// TODO:
 	// Let user use a webcrawler instead of only an API auth
@@ -78,7 +78,7 @@ func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subre
 		}
 	}
 
-  result = make(map[string]Subreddit, len(subreddits))
+	result = make(map[string]Subreddit, len(subreddits))
 
 	params := map[string]string{
 		"limit": limit,
@@ -87,8 +87,8 @@ func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subre
 	for _, subreddit := range subreddits {
 		format := "/r/%s"
 
-    sub := Subreddit{}
-    sub.Name = subreddit
+		sub := Subreddit{}
+		sub.Name = subreddit
 
 		harvest, err := r.bot.ListingWithParams(fmt.Sprintf(format, subreddit), params)
 		if err != nil {
@@ -96,9 +96,9 @@ func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subre
 		}
 
 		for _, post := range harvest.Posts {
-      // TODO:
-      // Allow user to set params that filter out URLs
-      // This ignores all posts that don't have an image
+			// TODO:
+			// Allow user to set params that filter out URLs
+			// This ignores all posts that don't have an image
 			if strings.Contains(post.URL, "/comments/") {
 				continue
 			}
@@ -106,7 +106,7 @@ func (r *Reddit) get(subreddits []string, limit string) (result map[string]Subre
 			p := Post{Name: post.Title, Author: post.Author, Link: post.URL}
 			sub.Posts = append(sub.Posts, p)
 		}
-    result[subreddit] = sub
+		result[subreddit] = sub
 	}
 	return
 }
