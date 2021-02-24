@@ -17,6 +17,9 @@ config := &sprout.Config{
   ClientSecret: "client_secret",
 }
 
+# Set config
+reddit.Conf = config
+
 # Pick subreddits to get data from
 subreddits := []string{
 	"funny",
