@@ -28,18 +28,16 @@ subreddits := []string{
 	"aww",
 }
 
-subreddits, err := reddit.Get(subs)
-if err != nil {
-  panic(err)
-}
-
-for name, subreddit := range subreddits {
-  fmt.Println(name) # Subreddit's name
-
-  # iterate through all posts harvested from the subreddit
-  for _, post := range subreddit.Posts {
-    fmt.Println(post.Link)
-  }
+limit := 10 # limit the amount of posts harvested
+for _, subreddit := range subreddits {
+	result, err := reddit.Get(subreddit, limit)
+	if err != nil {
+		panic(err)
+	}
+	
+	for _, post := range result.Posts {
+		fmt.Println(post.Link)
+	}
 }
 ```
 
