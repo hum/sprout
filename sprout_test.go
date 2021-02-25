@@ -24,12 +24,16 @@ func TestReddit(t *testing.T) {
 	subs := []string{"memes", "gaming", "dankmemes"}
 
 	limit := 10
-	subreddits, err := reddit.Get(subs, limit)
-	if err != nil {
-		t.Fatalf("%v\n", err)
-	}
 
-	if len(subreddits["memes"].Posts) > limit {
-		t.Fatalf("The length of harvested posts does not match the set limit. For %s subreddit: got=%d, expected=%d\n", subreddits["memes"].Name, len(subreddits["memes"].Posts), limit)
-	}
+  for _, s := range subs {
+    result, err := reddit.Get(s, limit)
+    if err != nil {
+      t.Fatalf("%v\n", err)
+    }
+
+    size := len(result.Posts)
+    if size > limit {
+      t.Fatalf("Fetched more images than the limit amount. Expected=%d, got=%d", limit, size)
+    }
+  }
 }
