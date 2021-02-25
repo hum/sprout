@@ -16,7 +16,7 @@ func New() *Sprout {
 
 func (s *Sprout) Reddit() *Reddit {
 	if s.reddit == nil {
-		return &Reddit{}
+    s.reddit = &Reddit{}
 	}
 	return s.reddit
 }
