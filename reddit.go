@@ -1,10 +1,10 @@
 package sprout
 
 import (
-  "fmt"
-  "strconv"
+	"fmt"
+	"strconv"
 
-  "github.com/turnage/graw/reddit"
+	"github.com/turnage/graw/reddit"
 )
 
 type Reddit struct {
@@ -27,7 +27,7 @@ func (r *Reddit) Get(subreddit string, limit int) (*Subreddit, error) {
 		if err != nil {
 			return nil, err
 		}
-    return result, nil
+		return result, nil
 	}
 	// TODO:
 	// Implement a web crawler solution
@@ -35,7 +35,7 @@ func (r *Reddit) Get(subreddit string, limit int) (*Subreddit, error) {
 }
 
 func (r *Reddit) get(subreddit, limit string) (*Subreddit, error) {
-  var err error
+	var err error
 
 	if r.bot == nil {
 		r.bot, err = createRedditBot(r.Conf)
@@ -53,7 +53,7 @@ func (r *Reddit) get(subreddit, limit string) (*Subreddit, error) {
 	s := &Subreddit{}
 	s.Name = subreddit
 
-  format := "/r/%s"
+	format := "/r/%s"
 	harvest, err := r.bot.ListingWithParams(fmt.Sprintf(format, s.Name), params)
 	if err != nil {
 		return nil, fmt.Errorf("Could not harvest posts from [%s] subreddit. %v\n", s.Name, err)

@@ -25,15 +25,15 @@ func TestReddit(t *testing.T) {
 
 	limit := 10
 
-  for _, s := range subs {
-    result, err := reddit.Get(s, limit)
-    if err != nil {
-      t.Fatalf("%v\n", err)
-    }
+	for _, s := range subs {
+		result, err := reddit.Get(s, limit)
+		if err != nil {
+			t.Fatalf("%v\n", err)
+		}
 
-    size := len(result.Posts)
-    if size > limit {
-      t.Fatalf("Fetched more images than the limit amount. Expected=%d, got=%d", limit, size)
-    }
-  }
+		size := len(result.Posts)
+		if size > limit {
+			t.Fatalf("Fetched more images than the limit amount. Expected=%d, got=%d", limit, size)
+		}
+	}
 }
